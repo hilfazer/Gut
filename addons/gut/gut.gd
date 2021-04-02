@@ -383,14 +383,18 @@ func _print_summary():
 
 	if(_new_summary.get_totals().tests > 0):
 		var fmt = _lgr.fmts.green
-		var msg = str(_new_summary.get_totals().passing) + ' passed ' + str(_new_summary.get_totals().failing) + ' failed.  ' + \
-			str("Tests finished in ", _gui.elapsed_time_as_str())
+		var msgPassing = str(_new_summary.get_totals().passing) + ' passed '
+		var msgFailing = str(_new_summary.get_totals().failing) + ' failed.  '
+		var msgFinished = str("Tests finished in ", _gui.elapsed_time_as_str()) + "\n"
+
 		if(_new_summary.get_totals().failing > 0):
 			fmt = _lgr.fmts.red
 		elif(_new_summary.get_totals().pending > 0):
 			fmt = _lgr.fmts.yellow
 
-		_lgr.log(msg, fmt)
+		_lgr.lograw(msgPassing, _lgr.fmts.green if _new_summary.get_totals().passing else _lgr.fmts.red)
+		_lgr.lograw(msgFailing, _lgr.fmts.red if _new_summary.get_totals().failing else _lgr.fmts.green)
+		_lgr.lograw(msgFinished, fmt)
 	else:
 		_lgr.log('No tests ran', _lgr.fmts.red)
 
@@ -495,7 +499,7 @@ func _end_run():
 	update()
 	_run_hook_script(_post_run_script_instance)
 	emit_signal(SIGNAL_TESTS_FINISHED)
-	
+
 	if _utils.should_display_latest_version:
 		p("")
 		p(str("GUT version ",_utils.latest_version," is now available."))
